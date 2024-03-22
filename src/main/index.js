@@ -3,6 +3,7 @@ import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 
 function createWindow() {
+
   // BrowserWindow 생성자에 위치 속성 추가
   const mainWindow = new BrowserWindow({
     width : 300,
@@ -12,6 +13,7 @@ function createWindow() {
     show: false,
     frame: false,
     autoHideMenuBar: true,
+    transparent : true,
     webPreferences: {
       preload: join(__dirname, '../preload/index.js'),
       sandbox: false
