@@ -1,21 +1,23 @@
 import { app, shell, BrowserWindow, ipcMain } from 'electron'
 import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
-import icon from '../../resources/icon.png?asset'
 
 function createWindow() {
-  // Create the browser window.
+  // BrowserWindow 생성자에 위치 속성 추가
   const mainWindow = new BrowserWindow({
-    width: 900,
-    height: 670,
+    width : 300,
+    height : 1080,
+    x : 1620,
+    y : 0,
     show: false,
+    frame: false,
     autoHideMenuBar: true,
-    ...(process.platform === 'linux' ? { icon } : {}),
     webPreferences: {
       preload: join(__dirname, '../preload/index.js'),
       sandbox: false
     }
   })
+  mainWindow.setIgnoreMouseEvents(true)
   mainWindow.setAlwaysOnTop(true, 'screen')
 
   mainWindow.on('ready-to-show', () => {

@@ -3,6 +3,11 @@ const http = require('http');
 const socketIo = require('socket.io');
 
 const app = express();
+app.use((req, res, next) => {
+  res.setHeader("Content-Security-Policy", "default-src 'self'; connect-src 'self' <URL>;");
+  next();
+});
+
 const server = http.createServer(app);
 const io = socketIo(server, {
   cors: {
