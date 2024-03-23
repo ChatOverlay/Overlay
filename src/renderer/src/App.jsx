@@ -1,7 +1,6 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import styled, { keyframes } from 'styled-components';
 import io from 'socket.io-client';
-
 const socket = io('http://localhost:4000'); // 실제 서버 주소로 변경해야 합니다.
 
 export default function App() {
@@ -9,11 +8,12 @@ export default function App() {
 
   useEffect(() => {
     socket.on('message', (message) => {
-      const expireTime = Date.now() + 10000; // 현재 시간으로부터 10초 후
-      const newMessage = { id: Date.now(), text: message, expire: expireTime };
+      const expireTime = Date.now() + 10000;
+      // 서버로부터 받은 메시지가 객체 형태인 경우 message.text를 사용
+      // 문자열인 경우 바로 message를 사용
+      const text = message.text ? message.text : message;
+      const newMessage = { id: Date.now(), text: text, expire: expireTime };
       setMessages((prevMessages) => [...prevMessages, newMessage]);
-
-      // 10초 후 메시지 제거 로직은 삭제
     });
 
     // 1초마다 만료된 메시지 제거
