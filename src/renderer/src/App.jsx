@@ -7,6 +7,10 @@ export default function App() {
   const [messages, setMessages] = useState([]);
 
   useEffect(() => {
+    const roomId = "room1"; // 예시 ID
+
+    socket.emit('joinRoom', roomId);
+
     socket.on('message', (message) => {
       const expireTime = Date.now() + 10000;
       // 서버로부터 받은 메시지가 객체 형태인 경우 message.text를 사용

@@ -3,11 +3,6 @@ const http = require('http');
 const socketIo = require('socket.io');
 
 const app = express();
-app.use((req, res, next) => {
-  res.setHeader("Content-Security-Policy", "default-src 'self'; connect-src 'self' <URL>;");
-  next();
-});
-
 const server = http.createServer(app);
 const io = socketIo(server, {
   cors: {
@@ -16,23 +11,36 @@ const io = socketIo(server, {
   }
 });
 
-// 클라이언트가 연결되었을 때의 이벤트 핸들러
+// 각 방별 메시지 저장
+const roomMessages = {
+  room1: [],
+  room2: [],
+  // 추가 방이 있다면 계속 추가
+};
+
 io.on('connection', (socket) => {
   console.log('A user connected');
 
-  // 클라이언트가 방에 조인하려고 할 때
   socket.on('joinRoom', (roomId) => {
     socket.join(roomId);
     console.log(`A user joined room: ${roomId}`);
+    // 방에 조인할 때 해당 방의 메시지를 클라이언트에 전송
+    roomMessages[roomId].forEach((message) => {
+      socket.emit('message', message);
+    });
   });
 
-  // 특정 방에 메시지 보내기
   socket.on('message', (message, roomId) => {
+    // 메시지를 해당 방의 메시지 목록에 추가
+    if (!roomMessages[roomId]) {
+      roomMessages[roomId] = []; // 방이 존재하지 않으면 생성
+    }
+    roomMessages[roomId].push(message);
+
     // roomId 방에 있는 클라이언트들에게만 메시지 전송
     io.to(roomId).emit('message', message);
   });
 
-  // 클라이언트가 연결을 끊었을 때의 이벤트 핸들러
   socket.on('disconnect', () => {
     console.log('User disconnected');
   });
