@@ -11,7 +11,7 @@ app.use((req, res, next) => {
 const server = http.createServer(app);
 const io = socketIo(server, {
   cors: {
-    origin: "*", // 모든 도메인에서의 접근을 허용합니다. 보안상의 이유로 적절한 도메인으로 제한하는 것이 좋습니다.
+    origin: "*",
     methods: ["GET", "POST"]
   }
 });
@@ -20,9 +20,16 @@ const io = socketIo(server, {
 io.on('connection', (socket) => {
   console.log('A user connected');
 
-  // 메시지를 받으면 모든 클라이언트에게 그 메시지를 전달
-  socket.on('message', (message) => {
-    io.emit('message', message);
+  // 클라이언트가 방에 조인하려고 할 때
+  socket.on('joinRoom', (roomId) => {
+    socket.join(roomId);
+    console.log(`A user joined room: ${roomId}`);
+  });
+
+  // 특정 방에 메시지 보내기
+  socket.on('message', (message, roomId) => {
+    // roomId 방에 있는 클라이언트들에게만 메시지 전송
+    io.to(roomId).emit('message', message);
   });
 
   // 클라이언트가 연결을 끊었을 때의 이벤트 핸들러
