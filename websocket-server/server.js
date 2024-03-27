@@ -21,24 +21,24 @@ const roomMessages = {
 io.on('connection', (socket) => {
   console.log('A user connected');
 
-  socket.on('joinRoom', (roomId) => {
-    socket.join(roomId);
-    console.log(`A user joined room: ${roomId}`);
+  socket.on('joinRoom', (titleName) => {
+    socket.join(titleName);
+    console.log(`A user joined room: ${titleName}`);
     // 방에 조인할 때 해당 방의 메시지를 클라이언트에 전송
-    roomMessages[roomId].forEach((message) => {
+    roomMessages[titleName].forEach((message) => {
       socket.emit('message', message);
     });
   });
 
-  socket.on('message', (message, roomId) => {
+  socket.on('message', (message, titleName) => {
     // 메시지를 해당 방의 메시지 목록에 추가
-    if (!roomMessages[roomId]) {
-      roomMessages[roomId] = []; // 방이 존재하지 않으면 생성
+    if (!roomMessages[titleName]) {
+      roomMessages[titleName] = []; // 방이 존재하지 않으면 생성
     }
-    roomMessages[roomId].push(message);
+    roomMessages[titleName].push(message);
 
     // roomId 방에 있는 클라이언트들에게만 메시지 전송
-    io.to(roomId).emit('message', message);
+    io.to(titleName).emit('message', message);
   });
 
   socket.on('disconnect', () => {

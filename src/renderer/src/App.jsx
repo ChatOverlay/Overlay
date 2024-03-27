@@ -7,9 +7,9 @@ export default function App() {
   const [messages, setMessages] = useState([]);
 
   useEffect(() => {
-    const roomId = "room1"; // 예시 ID
+    const titleName = "room2"; // 예시 ID
 
-    socket.emit('joinRoom', roomId);
+    socket.emit('joinRoom', titleName);
 
     socket.on('message', (message) => {
       const expireTime = Date.now() + 10000;
